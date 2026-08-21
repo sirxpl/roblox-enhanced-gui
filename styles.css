@@ -1,0 +1,30 @@
+/* Deep modern background */
+body, .container-main, .content {
+  background-color: #0b0c1b !important;
+  color: #ffffff !important;
+}
+
+/* Rounded game tiles with subtle borders */
+.game-card-container, .game-card {
+  background-color: #14162e !important;
+  border-radius: 12px !important;
+  border: 1px solid #202347 !important;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+/* Card hover animation */
+.game-card-container:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.4);
+}
+
+/* Left sidebar & header navigation bar */
+.navigation, #navigation {
+  background-color: #0e0f24 !important;
+  border-right: 1px solid #1a1c3b !important;
+}
+
+/* Clean up clutter and ads */
+.ad-slot, .banner-container, .roblox-popover-container {
+  display: none !important;
+}
