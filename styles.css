@@ -1,11 +1,11 @@
-/* Deep modern background */
-body, .container-main, .content {
+/* Deep background for main pages & custom extension wrappers */
+body, .container-main, .content, [class*="rogold"], [class*="ropro"] {
   background-color: #0b0c1b !important;
   color: #ffffff !important;
 }
 
-/* Rounded game tiles with subtle borders */
-.game-card-container, .game-card {
+/* Modernize native game tiles & extension custom cards */
+.game-card-container, .game-card, .rogold-card, .ropro-card {
   background-color: #14162e !important;
   border-radius: 12px !important;
   border: 1px solid #202347 !important;
@@ -13,18 +13,23 @@ body, .container-main, .content {
 }
 
 /* Card hover animation */
-.game-card-container:hover {
+.game-card-container:hover, .rogold-card:hover, .ropro-card:hover {
   transform: translateY(-4px);
   box-shadow: 0 8px 20px rgba(0, 0, 0, 0.4);
 }
 
-/* Left sidebar & header navigation bar */
-.navigation, #navigation {
+/* Left sidebar & header navigation bar (including custom buttons) */
+.navigation, #navigation, .navbar, .rbx-header {
   background-color: #0e0f24 !important;
   border-right: 1px solid #1a1c3b !important;
 }
 
-/* Clean up clutter and ads */
+/* Ensure text inside RoGold/RoPro widgets stays readable */
+.navigation .text-nav, .navigation a, [class*="rogold"] *, [class*="ropro"] * {
+  color: #e0e0ff !important;
+}
+
+/* Hide clutter and ads without removing custom extension UI elements */
 .ad-slot, .banner-container, .roblox-popover-container {
   display: none !important;
 }
