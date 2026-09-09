@@ -30,6 +30,18 @@
     '8737899170', '1537690962', '537413528', '9872472334', '286090429',
     '3260590327', '16732694052'
   ];
+  const friendList = [
+    ['vi_vinn', 'Vi_vinn Subjects', true],
+    ['Soulless', 'HOURS', true],
+    ['Void', 'generic roleplay game...', true],
+    ['臭虫', '⭐ X2 XP + 🧪 Alliance...', true],
+    ['Sky', '🕹️ [ARCADE] Pet Simulator', true],
+    ['LoreleiJ1234', '[UPDATE] ⚔️ Stateview Prison', true],
+    ['Erza', '🎂 Flee the Facility 🎂', true],
+    ['DNDavidTYT', '[LEGACY] Toilet Tower Defense', true],
+    ['Tempo Playz', '[THERMAL] War Tycoon', true],
+    ['Kube', '[🍎] Blox Fruits', true]
+  ];
 
   const gameGroups = [
     {
@@ -191,8 +203,8 @@
           </section>
           <section class="reg-section">
             <div class="reg-section-title"><h2>Friends <span>(322)</span></h2><div><button class="reg-filter">All Types <b>⌄</b></button><button class="reg-see-all">See All</button></div></div>
-            <div class="reg-friends">${['vi_vinn', 'Void', 'bacon', 'Prime Calamity', 'qdw2', 'Sky', 'LoreleiJ1234', 'Erza', 'DNDavidTYT'].map((name, index) => `
-              <article class="reg-friend" data-username="${name}"><div class="reg-friend-avatar tone-${index % 4}"><img src="${friendAvatar(name, index)}" alt="${name} avatar"></div><strong>${name}</strong><span>${['Vi_vinn Subjects','generic roleplay game...','Fisch 🍉 [SKYCREST]','Anime Vanguards: H...','[UPDATE] Stavevi...','[ARCADE] Pet Si...','[UPDATE] Stavevi...','Flee the Facility','[LEGACY] Toilet To...'][index]}</span></article>`).join('')}</div>
+            <div class="reg-friends">${friendList.map(([name, activity, online], index) => `
+              <article class="reg-friend" data-username="${name}"><div class="reg-friend-avatar tone-${index % 4}"><img src="${friendAvatar(name, index)}" data-fallback="${friendAvatar(name, index)}" alt="${name} avatar">${online ? '<b class="reg-online-badge">●</b>' : ''}</div><strong>${name}</strong><span>${activity}</span></article>`).join('')}</div>
           </section>
           ${gameGroups.map(renderGameGroup).join('')}
           ${renderPlaytime()}
@@ -203,6 +215,9 @@
 
     document.body.appendChild(dashboard);
     dashboard.querySelector('.reg-close').addEventListener('click', () => dashboard.classList.toggle('is-minimized'));
+    dashboard.querySelectorAll('.reg-friend-avatar img').forEach((image) => image.addEventListener('error', () => {
+      if (image.src !== image.dataset.fallback) image.src = image.dataset.fallback;
+    }));
     loadGameThumbnails(dashboard);
     loadFriendAvatars(dashboard);
     dashboard.querySelectorAll('.reg-game-shelf').forEach((shelf) => {
