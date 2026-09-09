@@ -264,7 +264,7 @@
         { name: 'Community private server', owner: 'Roblox player', players: 0 },
         { name: 'Friends only server', owner: 'Roblox player', players: 0 }
       ];
-      list.innerHTML = entries.map((server) => `<article class="reg-server-entry" data-server-search="${`${server.name} ${server.owner}`.toLowerCase()}"><div><strong>${server.name}</strong><span>by ${server.owner}</span><small>${server.players} players</small></div><button class="reg-join-server" data-private-link="${server.link || ''}" aria-label="Join ${server.name}">▶</button></article>`).join('');
+      list.innerHTML = entries.map((server) => `<article class="reg-server-entry" data-server-search="${`${server.name} ${server.owner}`.toLowerCase()}"><div><strong>${server.name}</strong><span>by ${server.owner}</span><small>${server.players} players</small></div><button class="reg-join-server${server.link ? '' : ' is-unavailable'}" data-private-link="${server.link || ''}" aria-label="${server.link ? `Join ${server.name}` : 'Private server link unavailable'}" title="${server.link ? 'Join private server' : 'Private server link unavailable'}">▶</button></article>`).join('');
       panel.querySelector('.reg-server-search').addEventListener('input', (event) => {
         const query = event.target.value.toLowerCase().trim();
         list.querySelectorAll('.reg-server-entry').forEach((entry) => {
@@ -273,7 +273,7 @@
       });
       list.querySelectorAll('.reg-join-server').forEach((button) => button.addEventListener('click', () => {
         const privateLink = button.dataset.privateLink;
-        window.open(privateLink || `https://www.roblox.com/games/${placeId}`, '_blank', 'noopener');
+        if (privateLink) window.open(privateLink, '_blank', 'noopener');
       }));
     });
   }

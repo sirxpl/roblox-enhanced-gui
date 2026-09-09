@@ -56,7 +56,7 @@ async function resolvePrivateServers(placeId) {
       name: server.name || 'Private server',
       owner: server.owner?.name || 'Roblox player',
       players: server.playing || 0,
-      link: server.privateServerLinkCode ? `https://www.roblox.com/games/${placeId}?privateServerLinkCode=${server.privateServerLinkCode}` : ''
+      link: server.privateServerLinkCode ? `https://www.roblox.com/share?code=${encodeURIComponent(server.privateServerLinkCode)}&type=Server` : ''
     }));
   } catch {
     return [];
