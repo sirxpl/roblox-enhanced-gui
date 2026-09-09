@@ -1,0 +1,11 @@
+* { box-sizing: border-box; }
+body { width: 330px; margin: 0; background: #17191b; color: #f4f5f6; font: 13px/1.35 -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; }
+.popup { padding: 18px; }
+.popup-header { display: flex; align-items: center; gap: 11px; padding-bottom: 16px; border-bottom: 1px solid #303438; }
+.brand-mark { display: grid; place-items: center; width: 34px; height: 34px; color: #17191b; background: #f4b52e; clip-path: polygon(0 16%, 100% 0, 87% 88%, 3% 100%); font-size: 21px; font-weight: 900; }
+.popup-header strong, .popup-header span, .status-card strong, .status-card small, .setting-row strong, .setting-row small { display: block; }
+.popup-header strong { font-size: 14px; }.popup-header span,.status-card small,.setting-row small { color: #94999e; font-size: 11px; }
+.status-card { display: flex; align-items: center; gap: 10px; margin: 16px 0 12px; padding: 11px 12px; border: 1px solid #303438; border-radius: 9px; background: #202326; }.status-dot { width: 9px; height: 9px; border-radius: 50%; background: #e0a523; box-shadow: 0 0 9px #e0a523; }.status-card strong { font-size: 12px; }
+.primary-button { width: 100%; height: 38px; border: 0; border-radius: 8px; background: #f0b32c; color: #17191b; font: inherit; font-weight: 700; cursor: pointer; }.primary-button:hover { background: #ffc64a; }
+.setting-row { display: flex; align-items: center; justify-content: space-between; gap: 12px; margin-top: 12px; padding: 11px 0; border-bottom: 1px solid #2b2f32; cursor: pointer; }.setting-row strong { font-size: 12px; }.setting-row input { position: absolute; opacity: 0; }.setting-row i { position: relative; width: 34px; height: 20px; flex: 0 0 34px; border-radius: 20px; background: #454a4f; }.setting-row i::after { content: ''; position: absolute; top: 3px; left: 3px; width: 14px; height: 14px; border-radius: 50%; background: #c6cbd0; transition: transform .15s ease; }.setting-row input:checked + i { background: #39955e; }.setting-row input:checked + i::after { transform: translateX(14px); background: #fff; }
+footer { margin-top: 15px; color: #70767b; font-size: 10px; text-align: center; }

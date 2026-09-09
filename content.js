@@ -228,6 +228,21 @@
     setupAvatarPicker();
   }
 
+  chrome.runtime?.onMessage?.addListener((message) => {
+    const dashboard = document.getElementById(dashboardId);
+    if (message.type !== 'reg-setting') return;
+    if (message.setting === 'dashboard' && message.value === true) {
+      if (dashboard) dashboard.classList.remove('is-minimized');
+      else createDashboard();
+    }
+    if (message.setting === 'dashboard' && message.value === false && dashboard) dashboard.remove();
+    if (message.setting === 'shelves' && dashboard) {
+      dashboard.querySelectorAll('.reg-game-section, .reg-playtime-section').forEach((section) => {
+        section.hidden = !message.value;
+      });
+    }
+  });
+
   window.addEventListener('load', boot);
   new MutationObserver(boot).observe(document.documentElement, { childList: true, subtree: true });
 })();
