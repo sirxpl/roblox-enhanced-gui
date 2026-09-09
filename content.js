@@ -232,10 +232,14 @@
       const thumbnails = new Map(result.data.map((thumbnail) => [String(thumbnail.targetId), thumbnail.imageUrl]));
       cards.forEach((card) => {
         const imageUrl = thumbnails.get(card.dataset.placeId);
-        if (imageUrl) card.querySelector('.reg-discovery-art').style.backgroundImage = `url("${imageUrl}")`;
+        if (imageUrl) {
+          const art = card.querySelector('.reg-discovery-art');
+          art.style.backgroundImage = `url("${imageUrl}")`;
+          art.classList.add('has-thumbnail');
+        }
       });
-    } catch (error) {
-      console.warn('Roblox Enhanced GUI could not load game thumbnails.', error);
+    } catch {
+      // CSS artwork remains in place when Roblox thumbnails are unavailable.
     }
   }
 

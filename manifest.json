@@ -4,6 +4,7 @@
   "version": "1.0",
   "description": "Custom modern dark theme for Roblox compatible with RoPro & RoGold.",
   "permissions": ["storage"],
+  "host_permissions": ["https://thumbnails.roblox.com/*"],
   
   "icons": {
     "16": "images/icon16.png",

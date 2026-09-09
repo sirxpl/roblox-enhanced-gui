@@ -48,4 +48,13 @@ body { background: #202224 !important; }
 }
 
 .reg-discovery-art { background-position: center; background-size: cover; }
+.reg-discovery-art.has-thumbnail::before { display: none; }
 .reg-friend-avatar img.is-missing { display: none; }
+
+@media (min-width: 721px) {
+  .reg-hero { min-height: 350px; }
+  .reg-hero-heading { top: 204px; }
+  .reg-profile-row { inset: 232px 18px 0; }
+  .reg-profile-picture { margin-top: 0; }
+  .reg-profile-name, .reg-profile-stats { margin-top: 0; }
+}
