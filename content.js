@@ -245,6 +245,53 @@
     });
   }
 
+  function avatarDatabase() {
+    return new Promise((resolve, reject) => {
+      const request = indexedDB.open('roblox-enhanced-gui', 1);
+      request.onupgradeneeded = () => request.result.createObjectStore('settings');
+      request.onsuccess = () => resolve(request.result);
+      request.onerror = () => reject(request.error);
+    });
+  }
+
+  async function saveAvatar(dataUrl) {
+    const database = await avatarDatabase();
+    await new Promise((resolve, reject) => {
+      const transaction = database.transaction('settings', 'readwrite');
+      transaction.objectStore('settings').put(dataUrl, 'custom_roblox_pfp');
+      transaction.oncomplete = resolve;
+      transaction.onerror = () => reject(transaction.error);
+    });
+    database.close();
+  }
+
+  async function loadAvatar() {
+    const database = await avatarDatabase();
+    const savedAvatar = await new Promise((resolve, reject) => {
+      const request = database.transaction('settings').objectStore('settings').get('custom_roblox_pfp');
+      request.onsuccess = () => resolve(request.result);
+      request.onerror = () => reject(request.error);
+    });
+    database.close();
+    return savedAvatar;
+  }
+
+  function compressAvatar(file) {
+    return new Promise((resolve, reject) => {
+      const image = new Image();
+      image.onload = () => {
+        const canvas = document.createElement('canvas');
+        const size = 256;
+        canvas.width = size;
+        canvas.height = size;
+        canvas.getContext('2d').drawImage(image, 0, 0, size, size);
+        resolve(canvas.toDataURL('image/jpeg', 0.82));
+      };
+      image.onerror = () => reject(new Error('The selected profile image could not be read.'));
+      image.src = URL.createObjectURL(file);
+    });
+  }
+
   function setupAvatarPicker() {
     const avatar = document.querySelector('#reg-dashboard .reg-profile-picture');
     if (!avatar || avatar.dataset.pickerReady) return;
@@ -256,19 +303,24 @@
     document.body.appendChild(input);
     avatar.title = 'Click to change profile picture';
     avatar.addEventListener('click', () => input.click());
-    input.addEventListener('change', () => {
+    input.addEventListener('change', async () => {
       const file = input.files?.[0];
       if (!file) return;
-      const reader = new FileReader();
-      reader.onload = (event) => {
-        const dataUrl = event.target.result;
-        localStorage.setItem('custom_roblox_pfp', dataUrl);
+      try {
+        const dataUrl = await compressAvatar(file);
+        await saveAvatar(dataUrl);
         applyCustomAvatar(dataUrl);
-      };
-      reader.readAsDataURL(file);
+      } catch (error) {
+        console.error('Roblox Enhanced GUI could not save the profile image.', error);
+        alert('The profile image could not be saved. Please choose a smaller image and try again.');
+      }
     });
-    const savedPfp = localStorage.getItem('custom_roblox_pfp');
-    if (savedPfp) applyCustomAvatar(savedPfp);
+    loadAvatar().then((savedPfp) => {
+      if (savedPfp) applyCustomAvatar(savedPfp);
+    }).catch(() => {
+      const legacyAvatar = localStorage.getItem('custom_roblox_pfp');
+      if (legacyAvatar) applyCustomAvatar(legacyAvatar);
+    });
   }
 
   function boot() {
