@@ -281,7 +281,7 @@
     document.getElementById('reg-server-panel')?.remove();
     const panel = document.createElement('div');
     panel.id = 'reg-server-panel';
-    panel.innerHTML = `<div class="reg-server-backdrop"></div><section class="reg-server-dialog" role="dialog" aria-label="${escapeHtml(gameName)} private servers"><button class="reg-server-close" aria-label="Close">×</button><div class="reg-server-heading"><h2>Private servers</h2><span class="reg-server-game">${escapeHtml(gameName)}</span></div><input class="reg-server-search" type="search" placeholder="Search private servers..." aria-label="Search private servers"><div class="reg-server-list"><div class="reg-server-loading">Loading servers...</div></div><a class="reg-view-all-servers" href="https://www.roblox.com/games/${encodeURIComponent(placeId)}#!/game-instances" target="_blank" rel="noopener">View all servers</a></section>`;
+    panel.innerHTML = `<div class="reg-server-backdrop"></div><section class="reg-server-dialog" role="dialog" aria-label="${escapeHtml(gameName)} private servers"><button class="reg-server-close" aria-label="Close">×</button><div class="reg-server-heading"><div><h2>Private servers</h2><span class="reg-server-game">${escapeHtml(gameName)}</span></div><button class="reg-roll-server" type="button" aria-label="Choose a random server" title="Choose a random server">▦ <span>Roll</span></button></div><input class="reg-server-search" type="search" placeholder="Search private servers..." aria-label="Search private servers"><div class="reg-server-list"><div class="reg-server-loading">Loading servers...</div></div><div class="reg-roll-result" aria-live="polite"></div><a class="reg-view-all-servers" href="https://www.roblox.com/games/${encodeURIComponent(placeId)}#!/game-instances" target="_blank" rel="noopener">View all servers</a></section>`;
     document.getElementById(dashboardId).appendChild(panel);
     panel.querySelector('.reg-server-close').addEventListener('click', () => panel.remove());
     panel.querySelector('.reg-server-backdrop').addEventListener('click', () => panel.remove());
@@ -296,6 +296,19 @@
         list.querySelectorAll('.reg-server-entry').forEach((entry) => {
           entry.hidden = query && !entry.dataset.serverSearch.includes(query);
         });
+      });
+      panel.querySelector('.reg-roll-server').addEventListener('click', () => {
+        const visibleEntries = [...list.querySelectorAll('.reg-server-entry')].filter((entry) => !entry.hidden);
+        list.querySelectorAll('.reg-server-entry').forEach((entry) => entry.classList.remove('is-rolled'));
+        const result = panel.querySelector('.reg-roll-result');
+        if (!visibleEntries.length) {
+          result.textContent = 'No matching servers to roll.';
+          return;
+        }
+        const selected = visibleEntries[Math.floor(Math.random() * visibleEntries.length)];
+        selected.classList.add('is-rolled');
+        selected.scrollIntoView({ block: 'nearest', behavior: 'smooth' });
+        result.textContent = `Selected: ${selected.querySelector('strong').textContent}`;
       });
       list.querySelectorAll('.reg-join-server').forEach((button) => button.addEventListener('click', () => {
         const privateLink = button.dataset.privateLink;
