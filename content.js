@@ -192,7 +192,7 @@
           <section class="reg-section">
             <div class="reg-section-title"><h2>Friends <span>(322)</span></h2><div><button class="reg-filter">All Types <b>⌄</b></button><button class="reg-see-all">See All</button></div></div>
             <div class="reg-friends">${['vi_vinn', 'Void', 'bacon', 'Prime Calamity', 'qdw2', 'Sky', 'LoreleiJ1234', 'Erza', 'DNDavidTYT'].map((name, index) => `
-              <article class="reg-friend"><div class="reg-friend-avatar tone-${index % 4}"><img src="${friendAvatar(name, index)}" alt="${name} avatar"></div><strong>${name}</strong><span>${['Vi_vinn Subjects','generic roleplay game...','Fisch 🍉 [SKYCREST]','Anime Vanguards: H...','[UPDATE] Stavevi...','[ARCADE] Pet Si...','[UPDATE] Stavevi...','Flee the Facility','[LEGACY] Toilet To...'][index]}</span></article>`).join('')}</div>
+              <article class="reg-friend" data-username="${name}"><div class="reg-friend-avatar tone-${index % 4}"><img src="${friendAvatar(name, index)}" alt="${name} avatar"></div><strong>${name}</strong><span>${['Vi_vinn Subjects','generic roleplay game...','Fisch 🍉 [SKYCREST]','Anime Vanguards: H...','[UPDATE] Stavevi...','[ARCADE] Pet Si...','[UPDATE] Stavevi...','Flee the Facility','[LEGACY] Toilet To...'][index]}</span></article>`).join('')}</div>
           </section>
           ${gameGroups.map(renderGameGroup).join('')}
           ${renderPlaytime()}
@@ -204,6 +204,7 @@
     document.body.appendChild(dashboard);
     dashboard.querySelector('.reg-close').addEventListener('click', () => dashboard.classList.toggle('is-minimized'));
     loadGameThumbnails(dashboard);
+    loadFriendAvatars(dashboard);
     dashboard.querySelectorAll('.reg-game-shelf').forEach((shelf) => {
       const track = shelf.querySelector('.reg-game-track');
       shelf.querySelector('.reg-carousel-prev').addEventListener('click', () => track.scrollBy({ left: -620, behavior: 'smooth' }));
@@ -230,6 +231,33 @@
           const art = card.querySelector('.reg-discovery-art');
           art.style.backgroundImage = `url("${imageUrl}")`;
           art.classList.add('has-thumbnail');
+        }
+
+        async function loadFriendAvatars(dashboard) {
+          const cards = [...dashboard.querySelectorAll('.reg-friend[data-username]')];
+          const usernames = cards.map((card) => card.dataset.username);
+          try {
+            const userResponse = await fetch('https://users.roblox.com/v1/usernames/users', {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({ usernames, excludeBannedUsers: false })
+            });
+            if (!userResponse.ok) throw new Error(`User lookup failed with ${userResponse.status}`);
+            const users = await userResponse.json();
+            const userIds = users.data.map((user) => user.id);
+            if (!userIds.length) return;
+            const thumbnailResponse = await fetch(`https://thumbnails.roblox.com/v1/users/avatar-headshot?userIds=${userIds.join(',')}&size=150x150&format=Png&isCircular=false`);
+            if (!thumbnailResponse.ok) throw new Error(`Avatar request failed with ${thumbnailResponse.status}`);
+            const thumbnails = await thumbnailResponse.json();
+            const avatars = new Map(thumbnails.data.map((thumbnail) => [String(thumbnail.targetId), thumbnail.imageUrl]));
+            const idsByName = new Map(users.data.map((user) => [user.name.toLowerCase(), String(user.id)]));
+            cards.forEach((card) => {
+              const imageUrl = avatars.get(idsByName.get(card.dataset.username.toLowerCase()));
+              if (imageUrl) card.querySelector('.reg-friend-avatar img').src = imageUrl;
+            });
+          } catch {
+            // Keep the deterministic local avatars when Roblox user data is unavailable.
+          }
         }
       });
     } catch {
