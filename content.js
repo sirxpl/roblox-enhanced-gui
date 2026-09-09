@@ -281,7 +281,7 @@
     document.getElementById('reg-server-panel')?.remove();
     const panel = document.createElement('div');
     panel.id = 'reg-server-panel';
-    panel.innerHTML = `<div class="reg-server-backdrop"></div><section class="reg-server-dialog" role="dialog" aria-label="${gameName} private servers"><button class="reg-server-close" aria-label="Close">×</button><h2>${gameName}</h2><p class="reg-server-subtitle">Private servers</p><input class="reg-server-search" type="search" placeholder="Search servers..." aria-label="Search private servers"><div class="reg-server-list"><div class="reg-server-loading">Loading servers...</div></div></section>`;
+    panel.innerHTML = `<div class="reg-server-backdrop"></div><section class="reg-server-dialog" role="dialog" aria-label="${escapeHtml(gameName)} private servers"><button class="reg-server-close" aria-label="Close">×</button><div class="reg-server-heading"><h2>Private servers</h2><span class="reg-server-game">${escapeHtml(gameName)}</span></div><input class="reg-server-search" type="search" placeholder="Search private servers..." aria-label="Search private servers"><div class="reg-server-list"><div class="reg-server-loading">Loading servers...</div></div><a class="reg-view-all-servers" href="https://www.roblox.com/games/${encodeURIComponent(placeId)}#!/game-instances" target="_blank" rel="noopener">View all servers</a></section>`;
     document.getElementById(dashboardId).appendChild(panel);
     panel.querySelector('.reg-server-close').addEventListener('click', () => panel.remove());
     panel.querySelector('.reg-server-backdrop').addEventListener('click', () => panel.remove());
@@ -289,7 +289,7 @@
       const list = panel.querySelector('.reg-server-list');
       const entries = servers.filter((server) => server.link);
       list.innerHTML = entries.length
-        ? entries.map((server) => `<article class="reg-server-entry" data-server-search="${`${server.name} ${server.owner}`.toLowerCase()}"><div><strong>${server.name}</strong><span>by ${server.owner}</span><small>${server.players} players</small></div><button class="reg-join-server" data-private-link="${server.link}" aria-label="Join ${server.name}" title="Join private server">▶</button></article>`).join('')
+        ? entries.map((server) => `<article class="reg-server-entry" data-server-search="${escapeHtml(`${server.name} ${server.owner}`.toLowerCase())}"><div class="reg-server-info"><strong>${escapeHtml(server.name)}</strong><span>by ${escapeHtml(server.owner)}</span><small>${Number(server.players) || 0} players</small></div><div class="reg-server-buttons"><button class="reg-join-server" data-private-link="${escapeHtml(server.link)}" aria-label="Join ${escapeHtml(server.name)}" title="Join private server"><span class="reg-quick-play-icon">▶</span></button></div></article>`).join('')
         : '<div class="reg-server-empty">No accessible private servers were returned for this game.</div>';
       panel.querySelector('.reg-server-search').addEventListener('input', (event) => {
         const query = event.target.value.toLowerCase().trim();
