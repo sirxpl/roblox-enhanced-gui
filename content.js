@@ -318,8 +318,7 @@
     loadAvatar().then((savedPfp) => {
       if (savedPfp) applyCustomAvatar(savedPfp);
     }).catch(() => {
-      const legacyAvatar = localStorage.getItem('custom_roblox_pfp');
-      if (legacyAvatar) applyCustomAvatar(legacyAvatar);
+      // The default Roblox CDN avatar remains active when IndexedDB is unavailable.
     });
   }
 
