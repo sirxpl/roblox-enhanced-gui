@@ -15,8 +15,33 @@
   };
 
   function findAvatar() {
-    const image = document.querySelector('.profile-avatar-image img, .avatar-card-image img, img[src*="avatar"]');
+    const image = document.querySelector('#rgu-navigation .rgu-sidebar-headshot img, .profile-avatar-image img, .avatar-card-image img, img[src*="AvatarHeadshot"]');
     return image?.src || 'https://tr.rbxcdn.com/30DAY-AvatarHeadshot-EDFE687966E145B9251D1B28BB0BBB53-Png/150/150/AvatarHeadshot/Png/isCircular';
+  }
+
+  function escapeHtml(value) {
+    return String(value).replace(/[&<>"']/g, (character) => ({
+      '&': '&amp;',
+      '<': '&lt;',
+      '>': '&gt;',
+      '"': '&quot;',
+      "'": '&#39;'
+    }[character]));
+  }
+
+  function getRobloxUser() {
+    const metadata = document.querySelector('meta[name="user-data"]');
+    const userId = metadata?.dataset.userid || '';
+    const username = metadata?.dataset.name || 'robloxplayer';
+    const displayName = metadata?.dataset.displayname || username;
+    const profileLink = userId ? `https://www.roblox.com/users/${encodeURIComponent(userId)}/profile` : 'https://www.roblox.com/users/profile';
+    return {
+      userId: escapeHtml(userId),
+      username: escapeHtml(username),
+      displayName: escapeHtml(displayName),
+      profileLink,
+      avatar: findAvatar()
+    };
   }
 
   function friendAvatar(name, index) {
@@ -161,14 +186,17 @@
   function createDashboard() {
     if (document.getElementById(dashboardId) || !location.pathname.startsWith('/home')) return;
 
+    const user = getRobloxUser();
     const dashboard = document.createElement('section');
     dashboard.id = dashboardId;
     dashboard.innerHTML = `
       <aside class="reg-sidebar">
         <div class="reg-brand"><span class="reg-brand-mark">R</span><strong>ROBLOX</strong></div>
         <div class="reg-account">
-          <img class="reg-account-avatar" src="${findAvatar()}" alt="">
-          <div><strong class="reg-display-name">Welcome back</strong><span>@robloxplayer</span></div>
+          <a class="reg-account-link" href="${user.profileLink}" target="_self" aria-label="Open ${user.displayName}'s profile">
+            <img class="reg-account-avatar" src="${user.avatar}" alt="${user.displayName} avatar">
+          </a>
+          <div><strong class="reg-display-name">${user.displayName}</strong><span>@${user.username}</span></div>
         </div>
         <nav class="reg-nav" aria-label="Enhanced navigation">
           ${[
@@ -201,11 +229,11 @@
         <div class="reg-content">
           <section class="reg-hero">
             <div class="reg-hero-art"></div>
-            <div class="reg-hero-heading">Looking good, <span class="reg-hero-name">Robloxian</span>!</div>
+            <div class="reg-hero-heading">Looking good, <span class="reg-hero-name">${user.displayName}</span>!</div>
             <div class="reg-profile-row">
-              <div class="reg-profile-picture"><img src="${findAvatar()}" alt="Profile avatar"><b>16</b></div>
-              <div class="reg-profile-name"><h2>Robloxian</h2><p>@robloxplayer</p></div>
-              <div class="reg-profile-stats"><strong>Level: 16 <small>Total Exp: 6,656</small></strong><button>View Leaderboard</button><button>View Rewards</button></div>
+              <div class="reg-profile-picture"><img src="${user.avatar}" alt="${user.displayName} profile avatar"><b>16</b></div>
+              <div class="reg-profile-name"><h2>${user.displayName}</h2><p>@${user.username}</p></div>
+              <div class="reg-profile-stats"><strong>Level: 16 <small>ID: ${user.userId || 'Unavailable'}</small></strong><button>View Leaderboard</button><button>View Rewards</button></div>
             </div>
           </section>
           <section class="reg-section">
