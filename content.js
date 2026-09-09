@@ -19,6 +19,18 @@
     return image?.src || 'https://tr.rbxcdn.com/30DAY-AvatarHeadshot-420E7B67E7B94E7A0D3E3F1D9AF2C7A1-Png/150/150/AvatarHeadshot/Webp/noFilter';
   }
 
+  const fallbackAvatars = [
+    'https://tr.rbxcdn.com/30DAY-AvatarHeadshot-420E7B67E7B94E7A0D3E3F1D9AF2C7A1-Png/150/150/AvatarHeadshot/Webp/noFilter',
+    'https://tr.rbxcdn.com/30DAY-AvatarHeadshot-8A7A1A74B99C9A887B1C15E9B6A21F04-Png/150/150/AvatarHeadshot/Webp/noFilter',
+    'https://tr.rbxcdn.com/30DAY-AvatarHeadshot-0C7A19B8E44A2CF2A7A3D112D0C4E8A2-Png/150/150/AvatarHeadshot/Webp/noFilter',
+    'https://tr.rbxcdn.com/30DAY-AvatarHeadshot-7A1F4B18C7E42DA4F6E2D0B1E53A77F0-Png/150/150/AvatarHeadshot/Webp/noFilter'
+  ];
+  const thumbnailPlaceIds = [
+    '920587237', '4924922222', '2753915549', '6516141723', '142823291',
+    '8737899170', '1537690962', '537413528', '9872472334', '286090429',
+    '3260590327', '16732694052'
+  ];
+
   const gameGroups = [
     {
       title: 'Recommended For You',
@@ -109,8 +121,8 @@
       <div class="reg-section-title"><h2>${group.title}</h2><div><button class="reg-see-all">See All ›</button></div></div>
       <div class="reg-game-shelf" data-shelf="${index}">
         <button class="reg-carousel-arrow reg-carousel-prev" aria-label="Previous ${group.title}">‹</button>
-        <div class="reg-game-track">${group.games.map(([name, primary, secondary, art]) => `
-          <article class="reg-discovery-card">
+        <div class="reg-game-track">${group.games.map(([name, primary, secondary, art], gameIndex) => `
+          <article class="reg-discovery-card" data-place-id="${thumbnailPlaceIds[(index * 3 + gameIndex) % thumbnailPlaceIds.length]}">
             <div class="reg-discovery-art ${art}"><span class="reg-art-mark">ROBLOX</span></div>
             <strong title="${name}">${name}</strong>
             <div class="reg-game-meta"><span>${group.metric === 'rating' ? '♥' : group.metric === 'votes' ? '●' : '◷'} ${primary}</span>${secondary ? `<span>♟ ${secondary}</span>` : ''}</div>
@@ -134,7 +146,7 @@
     dashboard.id = dashboardId;
     dashboard.innerHTML = `
       <aside class="reg-sidebar">
-        <div class="reg-brand"><span class="reg-brand-mark">R</span><strong>Roblox</strong></div>
+        <div class="reg-brand"><span class="reg-brand-mark">R</span><strong>ROBLOX</strong></div>
         <div class="reg-account">
           <img class="reg-account-avatar" src="${findAvatar()}" alt="">
           <div><strong class="reg-display-name">Welcome back</strong><span>@robloxplayer</span></div>
@@ -180,7 +192,7 @@
           <section class="reg-section">
             <div class="reg-section-title"><h2>Friends <span>(322)</span></h2><div><button class="reg-filter">All Types <b>⌄</b></button><button class="reg-see-all">See All</button></div></div>
             <div class="reg-friends">${['vi_vinn', 'Void', 'bacon', 'Prime Calamity', 'qdw2', 'Sky', 'LoreleiJ1234', 'Erza', 'DNDavidTYT'].map((name, index) => `
-              <article class="reg-friend"><div class="reg-friend-avatar tone-${index % 4}"><img src="${index === 0 ? findAvatar() : `https://tr.rbxcdn.com/30DAY-AvatarHeadshot-${['420E7B67E7B94E7A0D3E3F1D9AF2C7A1','8A7A1A74B99C9A887B1C15E9B6A21F04','0C7A19B8E44A2CF2A7A3D112D0C4E8A2','7A1F4B18C7E42DA4F6E2D0B1E53A77F0'][index % 4]}-Png/150/150/AvatarHeadshot/Webp/noFilter`}" alt=""></div><strong>${name}</strong><span>${['Vi_vinn Subjects','generic roleplay game...','Fisch 🍉 [SKYCREST]','Anime Vanguards: H...','[UPDATE] Stavevi...','[ARCADE] Pet Si...','[UPDATE] Stavevi...','Flee the Facility','[LEGACY] Toilet To...'][index]}</span></article>`).join('')}</div>
+              <article class="reg-friend"><div class="reg-friend-avatar tone-${index % 4}"><img src="${fallbackAvatars[index % fallbackAvatars.length]}" alt="${name} avatar"></div><strong>${name}</strong><span>${['Vi_vinn Subjects','generic roleplay game...','Fisch 🍉 [SKYCREST]','Anime Vanguards: H...','[UPDATE] Stavevi...','[ARCADE] Pet Si...','[UPDATE] Stavevi...','Flee the Facility','[LEGACY] Toilet To...'][index]}</span></article>`).join('')}</div>
           </section>
           ${gameGroups.map(renderGameGroup).join('')}
           ${renderPlaytime()}
@@ -190,7 +202,14 @@
     `;
 
     document.body.appendChild(dashboard);
+    dashboard.querySelectorAll('.reg-friend-avatar img').forEach((image) => {
+      image.addEventListener('error', () => {
+        image.removeAttribute('src');
+        image.classList.add('is-missing');
+      }, { once: true });
+    });
     dashboard.querySelector('.reg-close').addEventListener('click', () => dashboard.classList.toggle('is-minimized'));
+    loadGameThumbnails(dashboard);
     dashboard.querySelectorAll('.reg-game-shelf').forEach((shelf) => {
       const track = shelf.querySelector('.reg-game-track');
       shelf.querySelector('.reg-carousel-prev').addEventListener('click', () => track.scrollBy({ left: -620, behavior: 'smooth' }));
@@ -202,9 +221,27 @@
     }));
   }
 
+  async function loadGameThumbnails(dashboard) {
+    const cards = [...dashboard.querySelectorAll('.reg-discovery-card')];
+    const placeIds = cards.map((card) => card.dataset.placeId).filter(Boolean);
+    if (!placeIds.length) return;
+    try {
+      const response = await fetch(`https://thumbnails.roblox.com/v1/games/icons?placeIds=${placeIds.join(',')}&size=512x512&format=Png&isCircular=false`);
+      if (!response.ok) throw new Error(`Thumbnail request failed with ${response.status}`);
+      const result = await response.json();
+      const thumbnails = new Map(result.data.map((thumbnail) => [String(thumbnail.targetId), thumbnail.imageUrl]));
+      cards.forEach((card) => {
+        const imageUrl = thumbnails.get(card.dataset.placeId);
+        if (imageUrl) card.querySelector('.reg-discovery-art').style.backgroundImage = `url("${imageUrl}")`;
+      });
+    } catch (error) {
+      console.warn('Roblox Enhanced GUI could not load game thumbnails.', error);
+    }
+  }
+
   function applyCustomAvatar(dataUrl) {
     document.querySelectorAll('#reg-dashboard img').forEach((image) => {
-      if (image.classList.contains('reg-account-avatar') || image.closest('.reg-profile-picture') || image.closest('.reg-friend:first-child')) {
+      if (image.classList.contains('reg-account-avatar') || image.closest('.reg-profile-picture')) {
         image.src = dataUrl;
       }
     });
