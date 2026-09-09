@@ -142,7 +142,7 @@
         <button class="reg-carousel-arrow reg-carousel-prev" aria-label="Previous ${group.title}">‹</button>
         <div class="reg-game-track">${group.games.map(([name, primary, secondary, art], gameIndex) => `
           <article class="reg-discovery-card" data-place-id="${thumbnailPlaceIds[(index * 3 + gameIndex) % thumbnailPlaceIds.length]}" data-game-name="${name}">
-            <div class="reg-discovery-art ${art}"><span class="reg-art-mark">ROBLOX</span><div class="reg-game-actions"><button class="reg-game-action" aria-label="Game options">☷</button><button class="reg-game-action reg-server-trigger">▦</button><button class="reg-game-action" aria-label="Play ${name}">▶</button><button class="reg-server-label">View Servers</button></div></div>
+            <div class="reg-discovery-art ${art}"><span class="reg-art-mark">ROBLOX</span><div class="reg-game-actions"><button class="reg-game-action" aria-label="Game options">☷</button><button class="reg-game-action reg-server-trigger" aria-label="View servers">▦</button><button class="reg-game-action reg-play-trigger" aria-label="Play ${name}">▶</button><button class="reg-server-label">View Servers</button></div></div>
             <strong title="${name}">${name}</strong>
             <div class="reg-game-meta"><span>${group.metric === 'rating' ? '♥' : group.metric === 'votes' ? '●' : '◷'} ${primary}</span>${secondary ? `<span>♟ ${secondary}</span>` : ''}</div>
           </article>`).join('')}</div>
@@ -228,6 +228,11 @@
       const card = button.closest('.reg-discovery-card');
       openServerPanel(card.dataset.placeId, card.dataset.gameName);
     }));
+    dashboard.querySelectorAll('.reg-play-trigger').forEach((button) => button.addEventListener('click', (event) => {
+      event.preventDefault();
+      event.stopPropagation();
+      window.open(`https://www.roblox.com/games/${button.closest('.reg-discovery-card').dataset.placeId}`, '_blank', 'noopener');
+    }));
     dashboard.querySelectorAll('.reg-friend-avatar img').forEach((image) => image.addEventListener('error', () => {
       if (image.src !== image.dataset.fallback) image.src = image.dataset.fallback;
     }));
@@ -248,7 +253,7 @@
     document.getElementById('reg-server-panel')?.remove();
     const panel = document.createElement('div');
     panel.id = 'reg-server-panel';
-    panel.innerHTML = `<div class="reg-server-backdrop"></div><section class="reg-server-dialog" role="dialog" aria-label="${gameName} private servers"><button class="reg-server-close" aria-label="Close">×</button><h2>${gameName}</h2><p class="reg-server-subtitle">Private servers</p><div class="reg-server-list"><div class="reg-server-loading">Loading servers...</div></div><button class="reg-server-all">View all</button></section>`;
+    panel.innerHTML = `<div class="reg-server-backdrop"></div><section class="reg-server-dialog" role="dialog" aria-label="${gameName} private servers"><button class="reg-server-close" aria-label="Close">×</button><h2>${gameName}</h2><p class="reg-server-subtitle">Private servers</p><input class="reg-server-search" type="search" placeholder="Search servers..." aria-label="Search private servers"><div class="reg-server-list"><div class="reg-server-loading">Loading servers...</div></div></section>`;
     document.getElementById(dashboardId).appendChild(panel);
     panel.querySelector('.reg-server-close').addEventListener('click', () => panel.remove());
     panel.querySelector('.reg-server-backdrop').addEventListener('click', () => panel.remove());
@@ -259,7 +264,17 @@
         { name: 'Community private server', owner: 'Roblox player', players: 0 },
         { name: 'Friends only server', owner: 'Roblox player', players: 0 }
       ];
-      list.innerHTML = entries.map((server) => `<article class="reg-server-entry"><div><strong>${server.name}</strong><span>by ${server.owner}</span><small>${server.players} players</small></div><button aria-label="Join ${server.name}">▶</button></article>`).join('');
+      list.innerHTML = entries.map((server) => `<article class="reg-server-entry" data-server-search="${`${server.name} ${server.owner}`.toLowerCase()}"><div><strong>${server.name}</strong><span>by ${server.owner}</span><small>${server.players} players</small></div><button class="reg-join-server" data-private-link="${server.link || ''}" aria-label="Join ${server.name}">▶</button></article>`).join('');
+      panel.querySelector('.reg-server-search').addEventListener('input', (event) => {
+        const query = event.target.value.toLowerCase().trim();
+        list.querySelectorAll('.reg-server-entry').forEach((entry) => {
+          entry.hidden = query && !entry.dataset.serverSearch.includes(query);
+        });
+      });
+      list.querySelectorAll('.reg-join-server').forEach((button) => button.addEventListener('click', () => {
+        const privateLink = button.dataset.privateLink;
+        window.open(privateLink || `https://www.roblox.com/games/${placeId}`, '_blank', 'noopener');
+      }));
     });
   }
 

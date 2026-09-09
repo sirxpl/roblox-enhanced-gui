@@ -42,7 +42,8 @@ async function resolveFriendAvatars(usernames) {
       return (result.data || []).map((server) => ({
         name: server.name || 'Private server',
         owner: server.owner?.name || 'Roblox player',
-        players: server.playing || 0
+        players: server.playing || 0,
+        link: server.privateServerLinkCode ? `https://www.roblox.com/games/${placeId}?privateServerLinkCode=${server.privateServerLinkCode}` : ''
       }));
     } catch {
       return [];
