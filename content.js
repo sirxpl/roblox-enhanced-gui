@@ -42,6 +42,13 @@
     ['Tempo Playz', '[THERMAL] War Tycoon', true],
     ['Kube', '[🍎] Blox Fruits', true]
   ];
+  const knownFriendAvatars = {
+    vi_vinn: 'https://tr.rbxcdn.com/30DAY-AvatarHeadshot-EDFE687966E145B9251D1B28BB0BBB53-Png/150/150/AvatarHeadshot/Png/noFilter',
+    soulless: 'https://tr.rbxcdn.com/30DAY-AvatarHeadshot-A6FAB23FFE9F0A627F3FE3683F60E1F1-Png/150/150/AvatarHeadshot/Png/noFilter',
+    loreleij1234: 'https://tr.rbxcdn.com/30DAY-AvatarHeadshot-98AFE271596DE738EC4E0DEFBC93DFAF-Png/150/150/AvatarHeadshot/Png/noFilter',
+    erza: 'https://tr.rbxcdn.com/30DAY-AvatarHeadshot-1D6664C2E9169CCCF329BAB69C9936EE-Png/150/150/AvatarHeadshot/Png/noFilter',
+    kube: 'https://tr.rbxcdn.com/30DAY-AvatarHeadshot-E2B8C31ADADEBB4D7F095B5283D1E5E7-Png/150/150/AvatarHeadshot/Png/noFilter'
+  };
 
   const gameGroups = [
     {
@@ -204,7 +211,7 @@
           <section class="reg-section">
             <div class="reg-section-title"><h2>Friends <span>(322)</span></h2><div><button class="reg-filter">All Types <b>⌄</b></button><button class="reg-see-all">See All</button></div></div>
             <div class="reg-friends">${friendList.map(([name, activity, online], index) => `
-              <article class="reg-friend" data-username="${name}"><div class="reg-friend-avatar tone-${index % 4}"><img src="${friendAvatar(name, index)}" data-fallback="${friendAvatar(name, index)}" alt="${name} avatar">${online ? '<b class="reg-online-badge">●</b>' : ''}</div><strong>${name}</strong><span>${activity}</span></article>`).join('')}</div>
+              <article class="reg-friend" data-username="${name}"><div class="reg-friend-avatar tone-${index % 4}"><img src="${knownFriendAvatars[name.toLowerCase()] || friendAvatar(name, index)}" data-fallback="${friendAvatar(name, index)}" alt="${name} avatar">${online ? '<b class="reg-online-badge">●</b>' : ''}</div><strong>${name}</strong><span>${activity}</span></article>`).join('')}</div>
           </section>
           ${gameGroups.map(renderGameGroup).join('')}
           ${renderPlaytime()}
