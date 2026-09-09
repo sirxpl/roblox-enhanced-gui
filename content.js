@@ -259,12 +259,10 @@
     panel.querySelector('.reg-server-backdrop').addEventListener('click', () => panel.remove());
     requestExtensionData('private-servers', { placeId }).then((servers) => {
       const list = panel.querySelector('.reg-server-list');
-      const entries = servers.length ? servers : [
-        { name: `${gameName}'s server`, owner: 'Roblox player', players: 0 },
-        { name: 'Community private server', owner: 'Roblox player', players: 0 },
-        { name: 'Friends only server', owner: 'Roblox player', players: 0 }
-      ];
-      list.innerHTML = entries.map((server) => `<article class="reg-server-entry" data-server-search="${`${server.name} ${server.owner}`.toLowerCase()}"><div><strong>${server.name}</strong><span>by ${server.owner}</span><small>${server.players} players</small></div><button class="reg-join-server${server.link ? '' : ' is-unavailable'}" data-private-link="${server.link || ''}" aria-label="${server.link ? `Join ${server.name}` : 'Private server link unavailable'}" title="${server.link ? 'Join private server' : 'Private server link unavailable'}">▶</button></article>`).join('');
+      const entries = servers.filter((server) => server.link);
+      list.innerHTML = entries.length
+        ? entries.map((server) => `<article class="reg-server-entry" data-server-search="${`${server.name} ${server.owner}`.toLowerCase()}"><div><strong>${server.name}</strong><span>by ${server.owner}</span><small>${server.players} players</small></div><button class="reg-join-server" data-private-link="${server.link}" aria-label="Join ${server.name}" title="Join private server">▶</button></article>`).join('')
+        : '<div class="reg-server-empty">No accessible private servers were returned for this game.</div>';
       panel.querySelector('.reg-server-search').addEventListener('input', (event) => {
         const query = event.target.value.toLowerCase().trim();
         list.querySelectorAll('.reg-server-entry').forEach((entry) => {
