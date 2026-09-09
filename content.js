@@ -6,6 +6,114 @@
     return image?.src || 'https://tr.rbxcdn.com/30DAY-AvatarHeadshot-420E7B67E7B94E7A0D3E3F1D9AF2C7A1-Png/150/150/AvatarHeadshot/Webp/noFilter';
   }
 
+  const gameGroups = [
+    {
+      title: 'Recommended For You',
+      metric: 'rating',
+      games: [
+        ['Anime Stars Card Collection', '90%', '982', 'game-anime'],
+        ['RUNAWAYS [beta]', '96%', '26.3K+', 'game-runaways'],
+        ['Tank VS Train', '91%', '1.2K+', 'game-tank'],
+        ['San Diego Roleplay', '86%', '11.4K+', 'game-bus'],
+        ['Project 12 [BODY CAM!]', '69%', '7.8K+', 'game-project'],
+        ['[UPD!] My Toll Farm!', '98%', '1.4K+', 'game-toll']
+      ]
+    },
+    {
+      title: 'Favorites',
+      metric: 'rating',
+      games: [
+        ['Wanted [🏍️UPDATE]', '97%', '7.8K+', 'game-wanted'],
+        ['Verity [HORROR]', '51%', '675', 'game-verity'],
+        ['[UPD] Zombie Stories', '91%', '91', 'game-zombie'],
+        ['[EXTENDED] Buy All Free T-Shirts', '97%', '30', 'game-shirts'],
+        ['[UPD!] Ride A Cart Down A Slide', '97%', '195', 'game-cart'],
+        ['Xbox UI Launcher', '97%', '38', 'game-xbox']
+      ]
+    },
+    {
+      title: 'Standout Games',
+      metric: 'rating',
+      games: [
+        ['Empire', '95%', '4.4K+', 'game-empire'],
+        ['Creatures of Sonaria', '94%', '18K+', 'game-creatures'],
+        ['Build Base to Survive', '93%', '2.1K+', 'game-base'],
+        ['Forsaken', '92%', '9.2K+', 'game-forsaken']
+      ]
+    },
+    {
+      title: 'Global Most Played',
+      metric: 'time',
+      games: [
+        ["Sol's RNG [Summer Event ☀️]", '16y', '', 'game-sol'],
+        ['[ARCADE] Pet Simulator 99! 💰', '10y', '', 'game-pets'],
+        ['Fisch 🍉 [SKYCREST]', '8y 9mo', '', 'game-fisch'],
+        ['The Strongest Battlegrounds', '6y', '', 'game-battlegrounds'],
+        ['Bee Swarm Simulator', '6y', '', 'game-bees'],
+        ['Catalog Avatar Creator', '6y 8mo', '', 'game-catalog']
+      ]
+    },
+    {
+      title: 'Community Picks',
+      metric: 'votes',
+      games: [
+        ['Combat Initiation', '18 community votes', '', 'game-combat'],
+        ['dingus', '11 community votes', '', 'game-dingus'],
+        ['Build A Boat For Treasure', '16 community votes', '', 'game-boat'],
+        ['Evade', '9 community votes', '', 'game-evade'],
+        ['Regretavator [ELEVATOR SIMULATOR]', '9 community votes', '', 'game-regret'],
+        ['LOCOfficial!', '8 community votes', '', 'game-loc']
+      ]
+    },
+    {
+      title: 'Developer Games',
+      metric: 'time',
+      games: [
+        ["skell's super testing hub", '1h 53m', '', 'game-dev-house'],
+        ["SkellKing's Community Hub", '12m', '', 'game-dev-hub'],
+        ['BCF testing', '5m', '', 'game-dev-rock'],
+        ['*Fix bugs* MTA: Q17', '2m', '', 'game-dev-roblox'],
+        ['the sillys hub v2', '2m', '', 'game-dev-arch'],
+        ['Noob Destroyer', '2m', '', 'game-dev-city']
+      ]
+    },
+    {
+      title: 'Your Most Played Games',
+      metric: 'time',
+      games: [
+        ['Wanted [🏍️UPDATE]', '8h 1m', '', 'game-wanted'],
+        ['[📦] Tower Defense Simulator', '5h 31m', '', 'game-tds'],
+        ['Critical Tower Defense', '4h 10m', '', 'game-ctd'],
+        ['IRT Subway | Mainline', '3h 40m', '', 'game-subway'],
+        ['Seal A Driveway [RELEASE]', '1h 37m', '', 'game-driveway'],
+        ['[WEEK 2 🍉] Forsaken', '56m', '', 'game-forsaken']
+      ]
+    }
+  ];
+
+  function renderGameGroup(group, index) {
+    return `<section class="reg-section reg-game-section">
+      <div class="reg-section-title"><h2>${group.title}</h2><div><button class="reg-see-all">See All ›</button></div></div>
+      <div class="reg-game-shelf" data-shelf="${index}">
+        <button class="reg-carousel-arrow reg-carousel-prev" aria-label="Previous ${group.title}">‹</button>
+        <div class="reg-game-track">${group.games.map(([name, primary, secondary, art]) => `
+          <article class="reg-discovery-card">
+            <div class="reg-discovery-art ${art}"><span class="reg-art-mark">ROBLOX</span></div>
+            <strong title="${name}">${name}</strong>
+            <div class="reg-game-meta"><span>${group.metric === 'rating' ? '♥' : group.metric === 'votes' ? '●' : '◷'} ${primary}</span>${secondary ? `<span>♟ ${secondary}</span>` : ''}</div>
+          </article>`).join('')}</div>
+        <button class="reg-carousel-arrow reg-carousel-next" aria-label="Next ${group.title}">›</button>
+      </div>
+    </section>`;
+  }
+
+  function renderPlaytime() {
+    return `<section class="reg-section reg-playtime-section"><div class="reg-section-title"><h2>Your Playtime</h2></div>
+      <div class="reg-playtime"><div class="reg-playtime-header"><strong>◉ &nbsp; Playtime Overview</strong><div><button class="reg-chart-arrow">‹</button><button class="reg-time-range">Last 7 Days⌄</button><button class="reg-chart-arrow">›</button></div></div>
+      <div class="reg-chart"><div class="reg-chart-grid"></div><svg viewBox="0 0 900 280" preserveAspectRatio="none" aria-label="Playtime chart"><polyline class="chart-green" points="0,220 150,260 300,260 450,210 600,260 750,250 900,260"/><polyline class="chart-pink" points="0,220 150,155 300,260 450,260 600,220 750,25 900,120"/><polyline class="chart-blue" points="0,260 150,255 300,260 450,255 600,260 750,225 900,235"/></svg><div class="reg-chart-labels"><span>Tue, Sep 1</span><span>Wed, Sep 2</span><span>Thu, Sep 3</span><span>Fri, Sep 4</span><span>Sat, Sep 5</span><span>Sun, Sep 6</span><span>Mon, Sep 7</span></div></div>
+      <p class="reg-chart-note">Data provided by Roblox Enhanced GUI, not affiliated with Roblox.</p></div></section>`;
+  }
+
   function createDashboard() {
     if (document.getElementById(dashboardId) || !location.pathname.startsWith('/home')) return;
 
@@ -61,10 +169,8 @@
             <div class="reg-friends">${['vi_vinn', 'Void', 'bacon', 'Prime Calamity', 'qdw2', 'Sky', 'LoreleiJ1234', 'Erza', 'DNDavidTYT'].map((name, index) => `
               <article class="reg-friend"><div class="reg-friend-avatar tone-${index % 4}"><img src="${index === 0 ? findAvatar() : `https://tr.rbxcdn.com/30DAY-AvatarHeadshot-${['420E7B67E7B94E7A0D3E3F1D9AF2C7A1','8A7A1A74B99C9A887B1C15E9B6A21F04','0C7A19B8E44A2CF2A7A3D112D0C4E8A2','7A1F4B18C7E42DA4F6E2D0B1E53A77F0'][index % 4]}-Png/150/150/AvatarHeadshot/Webp/noFilter`}" alt=""></div><strong>${name}</strong><span>${['Vi_vinn Subjects','generic roleplay game...','Fisch 🍉 [SKYCREST]','Anime Vanguards: H...','[UPDATE] Stavevi...','[ARCADE] Pet Si...','[UPDATE] Stavevi...','Flee the Facility','[LEGACY] Toilet To...'][index]}</span></article>`).join('')}</div>
           </section>
-          <section class="reg-section">
-            <div class="reg-section-title"><h2>Continue</h2><button class="reg-see-all">See All ›</button></div>
-            <div class="reg-games">${['Brookhaven 🏡RP', 'Murder Mystery 2', 'Adopt Me!', 'Driving Empire', 'My Prison'].map((game, index) => `<article class="reg-game"><div class="reg-game-art game-${index}"><span>${index === 0 ? 'LIVE' : 'PLAY'}</span></div><strong>${game}</strong><small>▶ ${(12 + index * 7)}K playing</small></article>`).join('')}</div>
-          </section>
+          ${gameGroups.map(renderGameGroup).join('')}
+          ${renderPlaytime()}
         </div>
       </main>
       <button class="reg-close" aria-label="Close enhanced dashboard">×</button>
@@ -72,6 +178,11 @@
 
     document.body.appendChild(dashboard);
     dashboard.querySelector('.reg-close').addEventListener('click', () => dashboard.classList.toggle('is-minimized'));
+    dashboard.querySelectorAll('.reg-game-shelf').forEach((shelf) => {
+      const track = shelf.querySelector('.reg-game-track');
+      shelf.querySelector('.reg-carousel-prev').addEventListener('click', () => track.scrollBy({ left: -620, behavior: 'smooth' }));
+      shelf.querySelector('.reg-carousel-next').addEventListener('click', () => track.scrollBy({ left: 620, behavior: 'smooth' }));
+    });
     dashboard.querySelectorAll('.reg-nav-item[data-reg-view]').forEach((item) => item.addEventListener('click', () => {
       dashboard.querySelectorAll('.reg-nav-item').forEach((nav) => nav.classList.remove('is-active'));
       item.classList.add('is-active');
