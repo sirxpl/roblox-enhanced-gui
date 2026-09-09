@@ -16,7 +16,7 @@
 
   function findAvatar() {
     const image = document.querySelector('.profile-avatar-image img, .avatar-card-image img, img[src*="avatar"]');
-    return image?.src || 'https://tr.rbxcdn.com/30DAY-AvatarHeadshot-420E7B67E7B94E7A0D3E3F1D9AF2C7A1-Png/150/150/AvatarHeadshot/Webp/noFilter';
+    return image?.src || 'https://tr.rbxcdn.com/30DAY-AvatarHeadshot-EDFE687966E145B9251D1B28BB0BBB53-Png/150/150/AvatarHeadshot/Png/isCircular';
   }
 
   function friendAvatar(name, index) {
