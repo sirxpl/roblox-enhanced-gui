@@ -19,12 +19,12 @@
     return image?.src || 'https://tr.rbxcdn.com/30DAY-AvatarHeadshot-420E7B67E7B94E7A0D3E3F1D9AF2C7A1-Png/150/150/AvatarHeadshot/Webp/noFilter';
   }
 
-  const fallbackAvatars = [
-    'https://tr.rbxcdn.com/30DAY-AvatarHeadshot-420E7B67E7B94E7A0D3E3F1D9AF2C7A1-Png/150/150/AvatarHeadshot/Webp/noFilter',
-    'https://tr.rbxcdn.com/30DAY-AvatarHeadshot-8A7A1A74B99C9A887B1C15E9B6A21F04-Png/150/150/AvatarHeadshot/Webp/noFilter',
-    'https://tr.rbxcdn.com/30DAY-AvatarHeadshot-0C7A19B8E44A2CF2A7A3D112D0C4E8A2-Png/150/150/AvatarHeadshot/Webp/noFilter',
-    'https://tr.rbxcdn.com/30DAY-AvatarHeadshot-7A1F4B18C7E42DA4F6E2D0B1E53A77F0-Png/150/150/AvatarHeadshot/Webp/noFilter'
-  ];
+  function friendAvatar(name, index) {
+    const colors = ['#d88954', '#5a9bd5', '#a96ed1', '#58b87d'];
+    const initials = name.slice(0, 2).toUpperCase();
+    const svg = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 150 150"><rect width="150" height="150" rx="75" fill="${colors[index % colors.length]}"/><circle cx="75" cy="58" r="28" fill="#f4d2b8"/><path d="M30 145c5-36 25-52 45-52s40 16 45 52" fill="#20242a"/><text x="75" y="135" text-anchor="middle" fill="#fff" font-family="Arial,sans-serif" font-size="20" font-weight="700">${initials}</text></svg>`;
+    return `data:image/svg+xml,${encodeURIComponent(svg)}`;
+  }
   const thumbnailPlaceIds = [
     '920587237', '4924922222', '2753915549', '6516141723', '142823291',
     '8737899170', '1537690962', '537413528', '9872472334', '286090429',
@@ -192,7 +192,7 @@
           <section class="reg-section">
             <div class="reg-section-title"><h2>Friends <span>(322)</span></h2><div><button class="reg-filter">All Types <b>⌄</b></button><button class="reg-see-all">See All</button></div></div>
             <div class="reg-friends">${['vi_vinn', 'Void', 'bacon', 'Prime Calamity', 'qdw2', 'Sky', 'LoreleiJ1234', 'Erza', 'DNDavidTYT'].map((name, index) => `
-              <article class="reg-friend"><div class="reg-friend-avatar tone-${index % 4}"><img src="${fallbackAvatars[index % fallbackAvatars.length]}" alt="${name} avatar"></div><strong>${name}</strong><span>${['Vi_vinn Subjects','generic roleplay game...','Fisch 🍉 [SKYCREST]','Anime Vanguards: H...','[UPDATE] Stavevi...','[ARCADE] Pet Si...','[UPDATE] Stavevi...','Flee the Facility','[LEGACY] Toilet To...'][index]}</span></article>`).join('')}</div>
+              <article class="reg-friend"><div class="reg-friend-avatar tone-${index % 4}"><img src="${friendAvatar(name, index)}" alt="${name} avatar"></div><strong>${name}</strong><span>${['Vi_vinn Subjects','generic roleplay game...','Fisch 🍉 [SKYCREST]','Anime Vanguards: H...','[UPDATE] Stavevi...','[ARCADE] Pet Si...','[UPDATE] Stavevi...','Flee the Facility','[LEGACY] Toilet To...'][index]}</span></article>`).join('')}</div>
           </section>
           ${gameGroups.map(renderGameGroup).join('')}
           ${renderPlaytime()}
@@ -202,12 +202,6 @@
     `;
 
     document.body.appendChild(dashboard);
-    dashboard.querySelectorAll('.reg-friend-avatar img').forEach((image) => {
-      image.addEventListener('error', () => {
-        image.removeAttribute('src');
-        image.classList.add('is-missing');
-      }, { once: true });
-    });
     dashboard.querySelector('.reg-close').addEventListener('click', () => dashboard.classList.toggle('is-minimized'));
     loadGameThumbnails(dashboard);
     dashboard.querySelectorAll('.reg-game-shelf').forEach((shelf) => {
@@ -226,7 +220,7 @@
     const placeIds = cards.map((card) => card.dataset.placeId).filter(Boolean);
     if (!placeIds.length) return;
     try {
-      const response = await fetch(`https://thumbnails.roblox.com/v1/games/icons?placeIds=${placeIds.join(',')}&size=512x512&format=Png&isCircular=false`);
+      const response = await fetch(`https://thumbnails.roblox.com/v1/places/gameicons?placeIds=${placeIds.join(',')}&size=512x512&format=Png&isCircular=false`);
       if (!response.ok) throw new Error(`Thumbnail request failed with ${response.status}`);
       const result = await response.json();
       const thumbnails = new Map(result.data.map((thumbnail) => [String(thumbnail.targetId), thumbnail.imageUrl]));
