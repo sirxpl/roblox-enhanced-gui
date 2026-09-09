@@ -46,3 +46,6 @@ body { background: #202224 !important; }
   .reg-carousel-prev { left: -23px; }
   .reg-carousel-next { right: -23px; }
 }
+
+.reg-discovery-art { background-position: center; background-size: cover; }
+.reg-friend-avatar img.is-missing { display: none; }
