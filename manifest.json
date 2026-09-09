@@ -19,6 +19,9 @@
       "48": "images/icon48.png"
     }
   },
+  "background": {
+    "service_worker": "background.js"
+  },
 
   "content_scripts": [
     {

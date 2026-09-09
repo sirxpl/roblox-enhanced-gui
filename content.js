@@ -236,12 +236,9 @@
     const placeIds = cards.map((card) => card.dataset.placeId).filter(Boolean);
     if (!placeIds.length) return;
     try {
-      const response = await fetch(`https://thumbnails.roblox.com/v1/places/gameicons?placeIds=${placeIds.join(',')}&size=512x512&format=Png&isCircular=false`);
-      if (!response.ok) throw new Error(`Thumbnail request failed with ${response.status}`);
-      const result = await response.json();
-      const thumbnails = new Map(result.data.map((thumbnail) => [String(thumbnail.targetId), thumbnail.imageUrl]));
+      const thumbnails = await requestExtensionData('game-thumbnails', { placeIds });
       cards.forEach((card) => {
-        const imageUrl = thumbnails.get(card.dataset.placeId);
+        const imageUrl = thumbnails[card.dataset.placeId];
         if (imageUrl) {
           const art = card.querySelector('.reg-discovery-art');
           art.style.backgroundImage = `url("${imageUrl}")`;
@@ -257,32 +254,17 @@
   async function loadFriendAvatars(dashboard) {
     const cards = [...dashboard.querySelectorAll('.reg-friend[data-username]')];
     const usernames = cards.map((card) => card.dataset.username);
-    const batches = [];
-    for (let index = 0; index < usernames.length; index += 10) batches.push(usernames.slice(index, index + 10));
-    await Promise.all(batches.map(async (batch) => {
-      try {
-        const userResponse = await fetch('https://users.roblox.com/v1/usernames/users', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ usernames: batch, excludeBannedUsers: false })
-        });
-        if (!userResponse.ok) return;
-        const users = await userResponse.json();
-        const userIds = users.data.map((user) => user.id);
-        if (!userIds.length) return;
-        const thumbnailResponse = await fetch(`https://thumbnails.roblox.com/v1/users/avatar-headshot?userIds=${userIds.join(',')}&size=150x150&format=Png&isCircular=false`);
-        if (!thumbnailResponse.ok) return;
-        const thumbnails = await thumbnailResponse.json();
-        const avatars = new Map(thumbnails.data.map((thumbnail) => [String(thumbnail.targetId), thumbnail.imageUrl]));
-        const idsByName = new Map(users.data.map((user) => [user.name.toLowerCase(), String(user.id)]));
-        cards.forEach((card) => {
-          const imageUrl = avatars.get(idsByName.get(card.dataset.username.toLowerCase()));
-          if (imageUrl) card.querySelector('.reg-friend-avatar img').src = imageUrl;
-        });
-      } catch {
-        // Keep local fallback avatars for this batch when Roblox is unavailable.
-      }
-    }));
+    const avatars = await requestExtensionData('friend-avatars', { usernames });
+    cards.forEach((card) => {
+      const imageUrl = avatars[card.dataset.username.toLowerCase()];
+      if (imageUrl) card.querySelector('.reg-friend-avatar img').src = imageUrl;
+    });
+  }
+
+  function requestExtensionData(type, payload) {
+    return new Promise((resolve) => {
+      chrome.runtime.sendMessage({ type, ...payload }, (response) => resolve(response?.data || {}));
+    });
   }
 
   function applyCustomAvatar(dataUrl) {
