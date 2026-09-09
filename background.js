@@ -34,21 +34,6 @@ async function resolveFriendAvatars(usernames) {
     return {};
   }
 
-  async function resolvePrivateServers(placeId) {
-    try {
-      const response = await fetch(`https://games.roblox.com/v1/games/${placeId}/private-servers?limit=10&sortOrder=Asc`);
-      if (!response.ok) return [];
-      const result = await response.json();
-      return (result.data || []).map((server) => ({
-        name: server.name || 'Private server',
-        owner: server.owner?.name || 'Roblox player',
-        players: server.playing || 0,
-        link: server.privateServerLinkCode ? `https://www.roblox.com/games/${placeId}?privateServerLinkCode=${server.privateServerLinkCode}` : ''
-      }));
-    } catch {
-      return [];
-    }
-  }
 }
 
 async function resolveGameThumbnails(placeIds) {
@@ -59,5 +44,21 @@ async function resolveGameThumbnails(placeIds) {
     return Object.fromEntries(result.data.map((thumbnail) => [String(thumbnail.targetId), thumbnail.imageUrl]));
   } catch {
     return {};
+  }
+}
+
+async function resolvePrivateServers(placeId) {
+  try {
+    const response = await fetch(`https://games.roblox.com/v1/games/${placeId}/private-servers?limit=10&sortOrder=Asc`);
+    if (!response.ok) return [];
+    const result = await response.json();
+    return (result.data || []).map((server) => ({
+      name: server.name || 'Private server',
+      owner: server.owner?.name || 'Roblox player',
+      players: server.playing || 0,
+      link: server.privateServerLinkCode ? `https://www.roblox.com/games/${placeId}?privateServerLinkCode=${server.privateServerLinkCode}` : ''
+    }));
+  } catch {
+    return [];
   }
 }
