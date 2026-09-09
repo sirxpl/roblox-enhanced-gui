@@ -257,28 +257,32 @@
   async function loadFriendAvatars(dashboard) {
     const cards = [...dashboard.querySelectorAll('.reg-friend[data-username]')];
     const usernames = cards.map((card) => card.dataset.username);
-    try {
-      const userResponse = await fetch('https://users.roblox.com/v1/usernames/users', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ usernames, excludeBannedUsers: false })
-      });
-      if (!userResponse.ok) throw new Error(`User lookup failed with ${userResponse.status}`);
-      const users = await userResponse.json();
-      const userIds = users.data.map((user) => user.id);
-      if (!userIds.length) return;
-      const thumbnailResponse = await fetch(`https://thumbnails.roblox.com/v1/users/avatar-headshot?userIds=${userIds.join(',')}&size=150x150&format=Png&isCircular=false`);
-      if (!thumbnailResponse.ok) throw new Error(`Avatar request failed with ${thumbnailResponse.status}`);
-      const thumbnails = await thumbnailResponse.json();
-      const avatars = new Map(thumbnails.data.map((thumbnail) => [String(thumbnail.targetId), thumbnail.imageUrl]));
-      const idsByName = new Map(users.data.map((user) => [user.name.toLowerCase(), String(user.id)]));
-      cards.forEach((card) => {
-        const imageUrl = avatars.get(idsByName.get(card.dataset.username.toLowerCase()));
-        if (imageUrl) card.querySelector('.reg-friend-avatar img').src = imageUrl;
-      });
-    } catch {
-      // Keep the deterministic local avatars when Roblox user data is unavailable.
-    }
+    const batches = [];
+    for (let index = 0; index < usernames.length; index += 10) batches.push(usernames.slice(index, index + 10));
+    await Promise.all(batches.map(async (batch) => {
+      try {
+        const userResponse = await fetch('https://users.roblox.com/v1/usernames/users', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ usernames: batch, excludeBannedUsers: false })
+        });
+        if (!userResponse.ok) return;
+        const users = await userResponse.json();
+        const userIds = users.data.map((user) => user.id);
+        if (!userIds.length) return;
+        const thumbnailResponse = await fetch(`https://thumbnails.roblox.com/v1/users/avatar-headshot?userIds=${userIds.join(',')}&size=150x150&format=Png&isCircular=false`);
+        if (!thumbnailResponse.ok) return;
+        const thumbnails = await thumbnailResponse.json();
+        const avatars = new Map(thumbnails.data.map((thumbnail) => [String(thumbnail.targetId), thumbnail.imageUrl]));
+        const idsByName = new Map(users.data.map((user) => [user.name.toLowerCase(), String(user.id)]));
+        cards.forEach((card) => {
+          const imageUrl = avatars.get(idsByName.get(card.dataset.username.toLowerCase()));
+          if (imageUrl) card.querySelector('.reg-friend-avatar img').src = imageUrl;
+        });
+      } catch {
+        // Keep local fallback avatars for this batch when Roblox is unavailable.
+      }
+    }));
   }
 
   function applyCustomAvatar(dataUrl) {
