@@ -1,6 +1,19 @@
 (() => {
   const dashboardId = 'reg-dashboard';
 
+  const icons = {
+    home: '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="m3 10 9-7 9 7v10a1 1 0 0 1-1 1h-5v-6H9v6H4a1 1 0 0 1-1-1V10Z"/></svg>',
+    profile: '<svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="8" r="3.5"/><path d="M5 20c.8-3.5 3.1-5.2 7-5.2s6.2 1.7 7 5.2"/></svg>',
+    message: '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 5h14a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2h-7l-4 3v-3H5a2 2 0 0 1-2-2V7a2 2 0 0 1 2-2Z"/><path d="M7 10h.01M12 10h.01M17 10h.01"/></svg>',
+    users: '<svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="9" cy="8" r="3"/><circle cx="17" cy="9" r="2.5"/><path d="M3 20c.6-3.4 2.5-5 6-5s5.4 1.6 6 5M15 15c3.2-.2 5 1.5 5.5 4"/></svg>',
+    avatar: '<svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="7" r="3"/><path d="M5 20c.5-3.5 2.8-5 7-5s6.5 1.5 7 5M7 20h10"/></svg>',
+    bag: '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 8h14l1 12H4L5 8Z"/><path d="M9 8V6a3 3 0 0 1 6 0v2"/></svg>',
+    trade: '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 7h13l-3-3M20 17H7l3 3M17 4l3 3-3 3M7 14l-3 3 3 3"/></svg>',
+    community: '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 5h16v11H8l-4 3V5Z"/><path d="M8 9h8M8 12h5"/></svg>',
+    palette: '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 4a8 8 0 1 0 0 16h1.5a1.5 1.5 0 0 0 0-3H12a1.5 1.5 0 0 1 0-3h2.5A5.5 5.5 0 0 0 20 8.5 8 8 0 0 0 12 4Z"/><path d="M8 9h.01M12 7h.01M16 9h.01"/></svg>',
+    tag: '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="m4 5 8-1 8 8-7 7-8-8 1-6Z"/><circle cx="9" cy="9" r="1"/></svg>'
+  };
+
   function findAvatar() {
     const image = document.querySelector('.profile-avatar-image img, .avatar-card-image img, img[src*="avatar"]');
     return image?.src || 'https://tr.rbxcdn.com/30DAY-AvatarHeadshot-420E7B67E7B94E7A0D3E3F1D9AF2C7A1-Png/150/150/AvatarHeadshot/Webp/noFilter';
@@ -138,13 +151,13 @@
             ['community', 'Communities']
           ].map(([icon, label, count], index) => `
             <button class="reg-nav-item${index === 0 ? ' is-active' : ''}" data-reg-view="${label}">
-              <span class="reg-icon reg-icon-${icon}" aria-hidden="true"></span><span>${label}</span>
+              <span class="reg-icon reg-icon-${icon}">${icons[icon]}</span><span>${label}</span>
               ${count ? `<em>${count}</em>` : ''}
             </button>`).join('')}
         </nav>
         <div class="reg-sidebar-bottom">
-          <button class="reg-nav-item"><span class="reg-icon reg-icon-palette"></span><span>Themes</span></button>
-          <button class="reg-nav-item"><span class="reg-icon reg-icon-tag"></span><span>Deals</span></button>
+          <button class="reg-nav-item"><span class="reg-icon reg-icon-palette">${icons.palette}</span><span>Themes</span></button>
+          <button class="reg-nav-item"><span class="reg-icon reg-icon-tag">${icons.tag}</span><span>Deals</span></button>
           <div class="reg-version">Roblox Enhanced GUI <small>v1.0</small></div>
         </div>
       </aside>
