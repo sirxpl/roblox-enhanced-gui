@@ -7,6 +7,10 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
     resolveGameThumbnails(message.placeIds).then((data) => sendResponse({ data }));
     return true;
   }
+  if (message.type === 'private-servers') {
+    resolvePrivateServers(message.placeId).then((data) => sendResponse({ data }));
+    return true;
+  }
   return false;
 });
 
@@ -28,6 +32,21 @@ async function resolveFriendAvatars(usernames) {
     return Object.fromEntries(users.data.map((user) => [user.name.toLowerCase(), avatars.get(String(user.id))]).filter(([, url]) => url));
   } catch {
     return {};
+  }
+
+  async function resolvePrivateServers(placeId) {
+    try {
+      const response = await fetch(`https://games.roblox.com/v1/games/${placeId}/private-servers?limit=10&sortOrder=Asc`);
+      if (!response.ok) return [];
+      const result = await response.json();
+      return (result.data || []).map((server) => ({
+        name: server.name || 'Private server',
+        owner: server.owner?.name || 'Roblox player',
+        players: server.playing || 0
+      }));
+    } catch {
+      return [];
+    }
   }
 }
 
