@@ -1,0 +1,37 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Roblox Enhanced GUI</title>
+  <link rel="stylesheet" href="popup.css">
+</head>
+<body>
+  <main class="popup">
+    <header class="popup-header">
+      <div class="brand-mark">R</div>
+      <div>
+        <strong>Roblox Enhanced GUI</strong>
+        <span>RoGold-inspired controls</span>
+      </div>
+    </header>
+    <section class="status-card">
+      <span class="status-dot"></span>
+      <div><strong id="page-status">Checking Roblox...</strong><small id="page-detail">Detecting the current tab</small></div>
+    </section>
+    <button id="open-dashboard" class="primary-button">Open Enhanced Home</button>
+    <label class="setting-row">
+      <span><strong>Enhanced dashboard</strong><small>Show the custom Home interface</small></span>
+      <input id="dashboard-toggle" type="checkbox" checked>
+      <i></i>
+    </label>
+    <label class="setting-row">
+      <span><strong>Game shelves</strong><small>Recommendations and playtime cards</small></span>
+      <input id="shelves-toggle" type="checkbox" checked>
+      <i></i>
+    </label>
+    <footer>v1.0 · Settings are saved in this browser</footer>
+  </main>
+  <script src="popup.js"></script>
+</body>
+</html>
